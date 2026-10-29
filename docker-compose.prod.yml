@@ -1,0 +1,37 @@
+# Production Docker Compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    # In production, use managed PostgreSQL (Neon, Supabase, Railway, RDS)
+    # This service is disabled in favor of external DB
+    deploy:
+      replicas: 0
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}  # Must be set to production PostgreSQL URL
+      SECRET_KEY: ${SECRET_KEY}
+      API_URL: ${API_URL}
+    # No ports exposed - reverse proxy handles this
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    # No ports exposed - reverse proxy handles this
+    deploy:
+      resources:
+        limits:
+          memory: 256M

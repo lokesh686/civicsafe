@@ -1,6 +1,16 @@
+// Production-ready API configuration
+// Supports both development and production environments
+
 class ApiConfig {
-  // For web browsers connecting to localhost backend
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  // Base URL - change for production
+  // For web: use relative paths or your production API domain
+  // For mobile: use your production API domain
+  static String get baseUrl {
+    // In production, this should come from build-time configuration
+    // For now, default to localhost for development
+    const String envUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8000');
+    return envUrl;
+  }
 
   // Auth endpoints
   static const String register = '/auth/register';
@@ -18,4 +28,7 @@ class ApiConfig {
 
   // Authority
   static const String resolveIssue = '/authority/resolve';
+
+  // Helper to build full URL
+  static String fullUrl(String endpoint) => '$baseUrl$endpoint';
 }
